@@ -10,8 +10,7 @@ def getInputs():
         size = input("enter size: ")
         if size == "5" or size == "7":
             break
-        else:
-            print("invalid input, enter again")
+        print("invalid input, enter again")
     colours = "red green blue magenta orange cyan grey white"
     splitColours = colours.split() #split into list of strings
     while True:
@@ -32,14 +31,10 @@ def validColour(splitColours, colourNum):
     while notValid:
         inputColour = input("enter colour {0}: ".format(colourNum))
         for eachColour in splitColours:
-            if inputColour != eachColour:
-                pass
-            else:
+            if inputColour == eachColour:
                 notValid = False
                 break
-        if notValid == False:
-            break
-        else:
+        if notValid == True:
             print("invalid colour, enter again")
     return inputColour
 
@@ -52,25 +47,25 @@ def drawGrid(size, colour1, colour2, colour3):
     x = 0
     y = (intSize*100) - 100
     for finalPatch in range(newSize):
-        finalNumberPatch(win, x, y, colour1)
+        finalNumberPatch(win, x, y, colour2)
         if finalPatch > 0: #add patches downwards aside from 1st box
-            penultimateNumberPatch(win, x-100, y+100, colour1)
+            penNumPatch(win, x-100, y+100, colour2)
             downY = y + 100
             downY2 = y + 200
             for downFinPatch in range(downSquares):
-                finalNumberPatch(win, x, downY, colour2)
+                finalNumberPatch(win, x, downY, colour3)
                 downY += 100
             for downFinPatch2 in range(downSquares-1):
-                penultimateNumberPatch(win, x-100, downY2, colour2)
+                penNumPatch(win, x-100, downY2, colour3)
                 downY2 += 100
             downSquares += 2
         upY = y - 100 #add patches upwards aside from last top right box
         upY2 = y - 200
         for upPenPatch in range(upSquares):
-            penultimateNumberPatch(win, x, upY, colour3)
+            penNumPatch(win, x, upY, colour1)
             upY -= 100
         for upPenPatch2 in range(upSquares-1):
-            penultimateNumberPatch(win, x+100, upY2, colour3)
+            penNumPatch(win, x+100, upY2, colour1)
             upY2 -= 100
         upSquares -= 2
         x += 200
@@ -81,56 +76,44 @@ def finalNumberPatch(win, x, y, colour):
     topY = y - 10 #only these 2 dimensions change
     bottomX = x + 110
     for i in range(5):
-        drawRectangle(win, x, topY+10, bottomX-10, y+100, "white")
-        drawRectangle(win, x, topY+20, bottomX-20, y+100, colour)
+        drawSquare(win, x, topY+10, bottomX-10, y+100, "white")
+        drawSquare(win, x, topY+20, bottomX-20, y+100, colour)
         topY += 20
         bottomX -= 20
 
-def penultimateNumberPatch(win, x, y, colour):
-    circlesY = y
-    for circlesDown in range(3): #draws 3 circles down
-        drawCircle(win, x, circlesY, colour)
-        drawTriangle(win, Point(x+20, circlesY),
-        Point(x+10, circlesY+10), Point(x+20, circlesY+20))
-        squaresX = x
-        if circlesDown < 2: #draws 3 squares across on 2 rows
-            for circlesInbetween in range(3):
-                drawSquare(win, squaresX, circlesY+20, colour)
-                if circlesInbetween < 2: #draws 2 circles inbetween main rows
-                    drawCircle(win, squaresX+20, circlesY+20, colour)
-                    drawTriangle(win, Point(squaresX+20, circlesY+20),
-                    Point(squaresX+30, circlesY+30), Point(squaresX+20, circlesY+40))
-                squaresX += 40
-        circlesX = x + 40
-        for circlesAcross in range(2): #draws 2 circles across
-            drawCircle(win, circlesX, circlesY, colour)
-            drawTriangle(win, Point(circlesX+20, circlesY),
-            Point(circlesX+10, circlesY+10), Point(circlesX+20, circlesY+20))
-            drawSquare(win, circlesX-20, circlesY, colour) #draws 2 squares in between 3 circles
-            circlesX += 40
-        circlesY += 40
+def penNumPatch(win, x, y, colour):
+    circleY = y
+    for circleRow in range(3):
+        circleX = x
+        for circle in range(3):
+            drawCircle(win, circleX, circleY, colour)
+            drawTriangle(win, circleX, circleY, 20)
+            if circle < 2:
+                drawSquare(win, circleX+20, circleY, circleX+40, circleY+20, colour)
+            if circleRow < 2:
+                drawSquare(win, circleX, circleY+20, circleX+20, circleY+40, colour)
+            if circleRow < 2 and circle < 2:
+                drawCircle(win, circleX+20, circleY+20, colour)
+                drawTriangle(win, circleX+20, circleY+20, 0)
+            circleX += 40
+        circleY += 40
 
-def drawRectangle(win, x, topY, bottomX, bottomY, colour):
-    rectangle = Rectangle(Point(x, topY), Point(bottomX, bottomY))
-    rectangle.setFill(colour)
-    rectangle.draw(win)
-
-def drawCircle(win, rowX, rowY, colour):
-    circle = Circle(Point(rowX+10, rowY+10), 10)
+def drawCircle(win, x, y, colour):
+    circle = Circle(Point(x+10, y+10), 10)
     circle.setFill(colour)
     circle.draw(win)
 
-def drawSquare(win, rowX, rowY, colour):
-    square = Rectangle(Point(rowX, rowY), Point(rowX+20, rowY+20))
+def drawSquare(win, x, y, x2, y2, colour):
+    square = Rectangle(Point(x, y), Point(x2, y2))
     square.setFill(colour)
     square.draw(win)
 
-def drawTriangle(win, point1, point2, point3):
-    triangle = Polygon(Point(point1.getX(), point1.getY()),
-    Point(point2.getX(), point2.getY()),
-    Point(point3.getX(), point3.getY()))
-    triangle.setOutline("white")
+def drawTriangle(win, x, y, directionX):
+    triangle = Polygon(Point(x+directionX, y),
+    Point(x+10, y+10),
+    Point(x+directionX, y+20))
     triangle.setFill("white")
+    triangle.setOutline("white")
     triangle.draw(win)
 
 main()
